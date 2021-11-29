@@ -39,13 +39,16 @@ function preload(){
 
 function setup() {
   createCanvas(600, 200);
+
+  var mensagem = "isso é uma mensagem";
+  console.log(mensagem);
   
   trex = createSprite(50,180,20,50);
   trex.addAnimation("running", trex_correndo);
   trex.addAnimation("collided" , trex_colidiu)
   trex.scale = 0.5;
- // trex.setCollider("circle",0,0,40);
- trex.setCollider("rectangle",10,10,100,trex.height);
+  trex.setCollider("circle",0,0,40);
+ //trex.setCollider("rectangle",10,10,100,trex.height);
   trex.debug =true;
   
  solo = createSprite(200,180,400,20);
@@ -74,6 +77,7 @@ function setup() {
 }
 
 function draw() {
+  console.log(mensagem);
   background("white");
   console.log("isto e:"+estadodeJogo);
   //exibindo a pontuação
@@ -88,7 +92,7 @@ function draw() {
     restart.visible = false;
     gameover.visible = false;
     //pontuação
-    pontuacao = pontuacao + Math.round(frameCount/60);
+    pontuacao = pontuacao + Math.round(frameRate()/60);
     if(pontuacao>0 && pontuacao % 1000 === 0){
       checkpoint.play();
     }
@@ -113,10 +117,8 @@ function draw() {
     spawnObstacles();
    
     if(grupodeobstaculos.isTouching(trex)){
-     // estadodeJogo = ENCERRAR;
-      //morrer.play();
-      trex.velocityY = -13;
-      pulo.play();
+      estadodeJogo = ENCERRAR;
+      morrer.play();
     }
   }
    else if (estadodeJogo === ENCERRAR) {
@@ -126,20 +128,35 @@ function draw() {
 
       restart.visible = true;
       gameover.visible = true;
+
+     
      
      grupodeobstaculos.setVelocityXEach(0);
      grupodeobstaculos.setLifetimeEach(-1);
      grupodenuvens.setVelocityXEach(0);
      grupodenuvens.setLifetimeEach(-1);
+
+     if(mousePressedOver(restart)) {
+      reset();
+
+    }
    }
   
  
   //impedir que trex cais
   trex.collide(soloinvisivel);
   
-  
+   
   
   drawSprites();
+}
+
+function reset(){
+  estadodeJogo = JOGAR;
+  grupodeobstaculos.destroyEach();
+  grupodenuvens.destroyEach()
+  trex.changeAnimation("running",trex_correndo);
+  pontuacao = 0;
 }
 
 function spawnObstacles(){
