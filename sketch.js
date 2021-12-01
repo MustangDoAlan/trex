@@ -38,12 +38,12 @@ function preload(){
 }
 
 function setup() {
-  createCanvas(600, 200);
+  createCanvas(windowWidth,windowHeight);
 
   var mensagem = "isso é uma mensagem";
   console.log(mensagem);
   
-  trex = createSprite(50,180,20,50);
+  trex = createSprite(50,height-70,20,50);
   trex.addAnimation("running", trex_correndo);
   trex.addAnimation("collided" , trex_colidiu)
   trex.scale = 0.5;
@@ -51,19 +51,19 @@ function setup() {
  //trex.setCollider("rectangle",10,10,100,trex.height);
   trex.debug =true;
   
- solo = createSprite(200,180,400,20);
+ solo = createSprite(width/2,height-30,width,125);
  solo.addImage("ground",imagemdosolo);
  solo.x =solo.width /2;
   
   
-  soloinvisivel = createSprite(200,190,400,10);
+  soloinvisivel = createSprite(width/2,height-20,width,10);
   soloinvisivel.visible = false;
 
-  gameover = createSprite(300,100);
+  gameover = createSprite(width/2,height/2);
   gameover.addImage("gameOver",gameoverimg);
-  gameover.scale = 0.5;
+  gameover.scale = 0.7;
 
-  restart = createSprite(300,140);
+  restart = createSprite(width/2,height/2+40);
   restart.addImage("restart",restartimg);
   restart.scale = 0.5;
   
@@ -77,11 +77,10 @@ function setup() {
 }
 
 function draw() {
-  console.log(mensagem);
   background("white");
   console.log("isto e:"+estadodeJogo);
   //exibindo a pontuação
-  text("Pontuação: "+ pontuacao, 500,50);
+  text("Pontuação: "+ pontuacao, width-120,50);
   
   
   
@@ -93,7 +92,7 @@ function draw() {
     gameover.visible = false;
     //pontuação
     pontuacao = pontuacao + Math.round(frameRate()/60);
-    if(pontuacao>0 && pontuacao % 1000 === 0){
+    if(pontuacao>0 && pontuacao % 100 === 0){
       checkpoint.play();
     }
     
@@ -102,9 +101,10 @@ function draw() {
     }
     
     //pular quando a tecla espaço é pressionada
-    if(keyDown("space")&& trex.y >= 160) {
+    if(touches.lenght>0 || keyDown("space")&& trex.y >= height-60) {
         trex.velocityY = -13;
         pulo.play();
+        touches =[];
     }
     
     //acrescentar gravidade
@@ -136,8 +136,9 @@ function draw() {
      grupodenuvens.setVelocityXEach(0);
      grupodenuvens.setLifetimeEach(-1);
 
-     if(mousePressedOver(restart)) {
+     if(touches.lenght>0 || mousePressedOver(restart)) {
       reset();
+      touches = [];
 
     }
    }
@@ -161,7 +162,7 @@ function reset(){
 
 function spawnObstacles(){
  if (frameCount % 60 === 0){
-   var obstaculo = createSprite(600,165,10,40);
+   var obstaculo = createSprite(width+20,height-45,10,40);
    obstaculo.velocityX = -(6+pontuacao/100);
    
     //gerar obstáculos aleatórios
@@ -194,14 +195,14 @@ function spawnObstacles(){
 function spawnClouds() {
   //escreva o código aqui para gerar nuvens
    if (frameCount % 60 === 0) {
-     nuvem = createSprite(600,100,40,10);
-    nuvem.y = Math.round(random(10,60));
+     nuvem = createSprite(width+20,100,40,10);
+    nuvem.y = Math.round(random(100,height/2));
     nuvem.addImage(imagemdanuvem);
-    nuvem.scale = 0.5;
+    nuvem.scale = 1;
     nuvem.velocityX = -3;
     
      //atribuir tempo de vida à variável
-    nuvem.lifetime = 250;
+    nuvem.lifetime = width+20;
     
     //ajustar a profundidade
     nuvem.depth = trex.depth;
